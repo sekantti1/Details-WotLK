@@ -2595,9 +2595,11 @@
 
 	function _detalhes:BossModsLink()
 		if (_G.DBM) then
-			local dbm_callback_phase = function (event, msg, ...)
+			local dbm_callback_phase = function (event, mod, modId, phase, stageTotal)
 
-				local mod = _detalhes.encounter_table.DBM_Mod
+				if (not mod) then
+					mod = _detalhes.encounter_table.DBM_Mod
+				end
 
 				if (not mod) then
 					for index, tmod in ipairs (DBM.Mods) do
@@ -2609,7 +2611,7 @@
 					end
 				end
 
-				local phase = mod and mod.vb and mod.vb.phase
+				phase = phase or (mod and mod.vb and mod.vb.phase)
 				if (phase and _detalhes.encounter_table.phase ~= phase) then
 					--_detalhes:Msg ("Current phase:", phase)
 
@@ -2632,7 +2634,7 @@
 				_detalhes.encounter_table.DBM_ModTime = time()
 			end
 
-			DBM:RegisterCallback("DBM_Announce", dbm_callback_phase)
+			DBM:RegisterCallback("DBM_SetStage", dbm_callback_phase)
 			DBM:RegisterCallback("pull", dbm_callback_pull)
 		end
 
